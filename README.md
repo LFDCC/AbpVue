@@ -5,3 +5,26 @@
 ![license](https://img.shields.io/github/license/mashape/apistatus.svg)
 
 # 功能截图
+## 登录
+![登录](screenshot/1.png)
+
+## 功能概览
+![功能概览](screenshot/2.png)
+
+## 个人中心
+![个人中心](screenshot/3.png)
+
+## 角色权限
+![角色权限](screenshot/4.png)
+
+## 用户权限
+![用户权限](screenshot/5.png)
+
+## 审计日志
+![审计日志](screenshot/6.png)
+
+## 安全日志
+![安全日志](screenshot/7.png)
+
+## 多语言
+![多语言](screenshot/8.png)
