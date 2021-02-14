@@ -5,8 +5,8 @@
 ![license](https://img.shields.io/github/license/mashape/apistatus.svg)
 
 # 安装初始化
-## 后端项目 生成，执行AbpVue.DbMigrator自动迁移数据库
-## 前端项目 最好用yarn代替npm, 安装依赖yarn install
+### 后端项目 生成，执行AbpVue.DbMigrator自动迁移数据库
+### 前端项目 最好用yarn代替npm, 安装依赖yarn install
 
 # 功能截图
 ## 登录
