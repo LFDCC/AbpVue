@@ -1,0 +1,278 @@
+<template>
+  <div class="app-container">
+    <div class="filter-container">
+      <el-form
+        ref="logQueryForm"
+        label-position="left"
+        label-width="60px"
+        :model="queryForm"
+      >
+        <el-row>
+          <el-col :span="8">
+            <el-form-item :label="$t('LogManagement.DateTime')">
+              <el-date-picker
+                v-model="queryDateTime"
+                type="datetimerange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd HH:mm:ss"
+                :picker-options="pickerOptions"
+                :range-separator="$t('LogManagement[\'RangeSeparator\']')"
+                :start-placeholder="$t('LogManagement[\'StartPlaceholder\']')"
+                :end-placeholder="$t('LogManagement[\'EndPlaceholder\']')"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item
+              prop="actionName"
+              :label="$t('LogManagement[\'Action\']')"
+            >
+              <el-input
+                clearable
+                v-model="queryForm.actionName"
+                :placeholder="$t('AbpVue[\'Input\']', [])"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" style="margin-left: 20px">
+            <el-button
+              type="reset"
+              icon="el-icon-remove-outline"
+              @click="resetQueryForm"
+            >
+              {{ $t("LogManagement.Reset") }}
+            </el-button>
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              @click="handleSearch"
+            >
+              {{ $t("LogManagement.Search") }}
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+
+    <div class="table-container">
+      <el-table
+        height="550"
+        v-loading="listLoading"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%"
+        @sort-change="sortChange"
+        :default-sort="{ prop: 'creationTime', order: 'descending' }"
+      >
+        <el-table-column
+          :label="$t('LogManagement[\'CreationTime\']')"
+          prop="creationTime"
+          align="center"
+          min-width="180"
+          sortable="custom"
+        >
+          <template slot-scope="{ row }">
+            <span>{{ row.creationTime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          :label="$t('LogManagement[\'Action\']')"
+          prop="action"
+          align="center"
+          min-width="130"
+        >
+          <template slot-scope="{ row }">
+            <span>{{ row.action }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          :label="$t('LogManagement[\'ClientIpAddress\']')"
+          prop="clientIpAddress"
+          align="center"
+          min-width="150"
+        >
+          <template slot-scope="{ row }">
+            <span>{{ row.clientIpAddress }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          :label="$t('LogManagement[\'ApplicationName\']')"
+          prop="applicationName"
+          align="center"
+          min-width="130"
+        >
+          <template slot-scope="{ row }">
+            <span>{{ row.applicationName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          :label="$t('LogManagement[\'Identity\']')"
+          prop="identity"
+          align="center"
+          min-width="130"
+        >
+          <template slot-scope="{ row }">
+            <span>{{ row.identity }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          :label="$t('LogManagement[\'CorrelationId\']')"
+          prop="correlationId"
+          align="center"
+          min-width="250"
+        >
+          <template slot-scope="{ row }">
+            <span>{{ row.correlationId }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          :label="$t('LogManagement[\'BrowserInfo\']')"
+          prop="browserInfo"
+          align="center"
+          min-width="280"
+        >
+          <template slot-scope="{ row }">
+            <el-popover
+              placement="top-start"
+              :title="$t('LogManagement[\'BrowserInfo\']')"
+              width="200"
+              trigger="hover"
+              :content="row.browserInfo"
+              ><span slot="reference" class="long-text">{{
+                row.browserInfo
+              }}</span>
+            </el-popover>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="queryForm.page"
+        :limit.sync="queryForm.limit"
+        @pagination="getList"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import { getSecurityLogs } from "@/api/identity/profile";
+import { pickerRangeWithHotKey } from "@/utils/picker";
+import Pagination from "@/components/Pagination";
+import baseListQuery, { checkPermission } from "@/utils/abp";
+export default {
+  name: "Profile",
+  components: { Pagination },
+  data() {
+    return {
+      list: null,
+      total: 0,
+      listLoading: true,
+      queryDateTime: undefined,
+      queryForm: Object.assign(
+        {
+          startTime: undefined,
+          endTime: undefined,
+          userName: undefined,
+          applicationName: undefined,
+          actionName: undefined,
+          correlationId: undefined,
+          identity: undefined,
+        },
+        baseListQuery
+      ),
+    };
+  },
+  computed: {
+    pickerOptions: function () {
+      return pickerRangeWithHotKey();
+    },
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    checkPermission,
+    getList() {
+      this.listLoading = true;
+      if (this.queryDateTime) {
+        this.queryForm.startTime = this.queryDateTime[0];
+        this.queryForm.endTime = this.queryDateTime[1];
+      } else {
+        this.queryForm.startTime = undefined;
+        this.queryForm.endTime = undefined;
+      }
+      getSecurityLogs(this.queryForm).then((response) => {
+        this.list = response.items;
+        this.total = response.totalCount;
+        this.listLoading = false;
+      });
+    },
+    resetQueryForm() {
+      this.queryDateTime = undefined;
+      this.queryForm = Object.assign(
+        {
+          startTime: undefined,
+          endTime: undefined,
+          userName: undefined,
+          applicationName: undefined,
+          actionName: undefined,
+          correlationId: undefined,
+          identity: undefined,
+        },
+        baseListQuery
+      );
+    },
+    sortChange({ column, prop, order }) {
+      if (order) {
+        this.queryForm.sort = `${prop} ${order}`;
+      } else {
+        this.queryForm.sort = undefined;
+      }
+      this.handleSearch();
+    },
+    handleSearch() {
+      this.queryForm.page = 1;
+      this.getList();
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.app-container {
+  .long-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .line {
+    text-align: center;
+  }
+  .api-block {
+    height: auto;
+    border: none;
+    padding: 4px 0;
+    margin: 2px;
+  }
+  .el-tag {
+    margin: 2px;
+  }
+  .success {
+    border-color: #49cc90;
+    background: rgba(73, 204, 144, 0.1);
+  }
+  .danger {
+    border-color: #f93e3e;
+    background: rgba(249, 62, 62, 0.1);
+  }
+  .warning {
+    border-color: #fca130;
+    background: rgba(252, 161, 48, 0.1);
+  }
+}
+</style>

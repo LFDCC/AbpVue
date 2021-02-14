@@ -1,0 +1,8 @@
+{
+  "culture": "zh-Hans",
+  "texts": {
+    "File.Empty": "上传的文件为空",
+    "File.ErrorFormat": "文件格式不正确",
+    "File.ErrorSize": "文件大小不能超过{0}KB"
+  }
+}

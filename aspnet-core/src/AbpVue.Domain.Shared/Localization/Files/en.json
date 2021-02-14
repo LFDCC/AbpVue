@@ -1,0 +1,8 @@
+{
+  "culture": "en",
+  "texts": {
+    "File.Empty": "The file is empty",
+    "File.ErrorFormat": "The file format is incorrect",
+    "File.ErrorSize": "The file size cannot exceed {0}KB"
+  }
+}
