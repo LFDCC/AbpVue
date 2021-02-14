@@ -6,7 +6,7 @@
 
 # 安装初始化
 ### 后端项目 生成，执行AbpVue.DbMigrator自动迁移数据库
-### 前端项目 最好用yarn代替npm, 安装依赖yarn install
+### 前端项目 最好用yarn代替npm, 安装依赖yarn install 启动服务 yarn run dev
 
 # 功能截图
 ## 登录
