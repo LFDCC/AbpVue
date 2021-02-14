@@ -4,6 +4,10 @@
 [![vue-element-admin](https://img.shields.io/badge/vue--element--admin-4.3.1-brightgreen.svg)](https://github.com/PanJiaChen/vue-element-admin)
 ![license](https://img.shields.io/github/license/mashape/apistatus.svg)
 
+# 安装初始化
+## 后端项目 生成，执行AbpVue.DbMigrator自动迁移数据库
+## 前端项目 最好用yarn代替npm, 安装依赖yarn install
+
 # 功能截图
 ## 登录
 ![登录](screenshot/1.png)
