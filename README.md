@@ -5,8 +5,31 @@
 ![license](https://img.shields.io/github/license/mashape/apistatus.svg)
 
 # 安装初始化
-### 后端项目 生成，执行AbpVue.DbMigrator自动迁移数据库
-### 前端项目 最好用yarn代替npm, 安装依赖yarn install 启动服务 yarn run dev
+### 后端项目
+```bash 
+# 进入数据库迁移项目目录
+cd AbpVue/aspnet-core/src/AbpVue.DbMigrator
+# 启动迁移项目
+dotnet run
+-- 也可以使用vs打开解决方案，还原nuget包，运行AbpVue.DbMigrator项目进行初始化迁移数据库
+
+# 进入Host项目目录
+cd AbpVue/aspnet-core/src/AbpVue.HttpApi.Host
+# 启动Host项目
+dotnet run
+-- 也可以使用vs打开解决方案，还原nuget包，运行AbpVue.HttpApi.Host项目启动网站
+```
+### 前端项目 最好用yarn代替npm
+```bash 
+# 进入vue项目目录
+cd AbpVue/vue-element-admin
+# 安装依赖
+yarn install
+# 启动项目
+yarn run dev
+#构建项目
+yarn run build:prod
+```
 
 # 功能截图
 ## 登录
