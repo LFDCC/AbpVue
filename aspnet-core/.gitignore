@@ -258,3 +258,6 @@ src/AbpVue.IdentityServer/Logs/*
 src/AbpVue.HttpApi.Host/Logs/*
 src/AbpVue.HttpApi.Host/Logs/*
 src/AbpVue.DbMigrator/Logs/*
+
+logs/
+upload/
