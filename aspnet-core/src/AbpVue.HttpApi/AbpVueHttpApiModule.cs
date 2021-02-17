@@ -1,4 +1,4 @@
-﻿using Localization.Resources.AbpUi;
+using Localization.Resources.AbpUi;
 using AbpVue.Localization;
 using Volo.Abp.Account;
 using Volo.Abp.FeatureManagement;
@@ -7,6 +7,7 @@ using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.TenantManagement;
+using EasyAbp.Abp.SettingUi;
 
 namespace AbpVue
 {
@@ -18,6 +19,7 @@ namespace AbpVue
         typeof(AbpTenantManagementHttpApiModule),
         typeof(AbpFeatureManagementHttpApiModule)
         )]
+    [DependsOn(typeof(SettingUiHttpApiModule))]
     public class AbpVueHttpApiModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)

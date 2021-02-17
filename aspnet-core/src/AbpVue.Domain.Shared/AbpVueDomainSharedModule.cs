@@ -1,4 +1,4 @@
-﻿using AbpVue.Localization;
+using AbpVue.Localization;
 
 using Volo.Abp.AuditLogging;
 using Volo.Abp.AuditLogging.Localization;
@@ -14,6 +14,7 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
+using EasyAbp.Abp.SettingUi;
 
 namespace AbpVue
 {
@@ -27,6 +28,7 @@ namespace AbpVue
         typeof(AbpSettingManagementDomainSharedModule),
         typeof(AbpTenantManagementDomainSharedModule)
         )]
+    [DependsOn(typeof(SettingUiDomainSharedModule))]
     public class AbpVueDomainSharedModule : AbpModule
     {
         public override void PreConfigureServices(ServiceConfigurationContext context)

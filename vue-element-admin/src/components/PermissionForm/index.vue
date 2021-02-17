@@ -71,11 +71,11 @@
       </el-tabs>
       <el-divider />
     </el-form>
-    <div slot="footer" class="dialog-footer" v-if="!loading">
+    <div v-if="!loading" slot="footer" class="dialog-footer">
       <el-button @click="onFormClosed">
         {{ $t("AbpPermissionManagement['Cancel']") }}
       </el-button>
-      <el-button type="primary" @click="onSave" :loading="confirmButtonBusy">
+      <el-button type="primary" :loading="confirmButtonBusy" @click="onSave">
         {{ $t("AbpPermissionManagement['Save']") }}
       </el-button>
     </div>
@@ -85,205 +85,34 @@
 <script>
 import {
   getPermissions,
-  updatePermissions,
-} from "@/api/permission/permissions";
-import { fetchAppConfig } from "@/utils/abp";
+  updatePermissions
+} from '@/api/permission/permissions';
+import { fetchAppConfig } from '@/utils/abp';
 
 export default {
-  name: "PermissionForm",
+  name: 'PermissionForm',
   props: {
     providerName: {
       type: String,
-      required: true,
+      required: true
     },
     providerKey: {
       type: String,
-      required: true,
+      required: true
     },
     showDialog: {
       type: Boolean,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
       loading: false,
-      activeTabPane: "",
+      activeTabPane: '',
       confirmButtonBusy: false,
-      entityDisplayName: "",
-      permissionGroups: new Array(),
+      entityDisplayName: '',
+      permissionGroups: new Array()
     };
-  },
-  methods: {
-    /**
-     * 获取权限集合
-     */
-    handleGetPermissions() {
-      this.loading = true;
-      this.activeTabPane = "";
-      this.permissionGroups.length = 0;
-      getPermissions({
-        providerName: this.providerName,
-        providerKey: this.providerKey,
-      })
-        .then((res) => {
-          this.entityDisplayName = res.entityDisplayName;
-          res.groups.map((g) => {
-            const group = new PermissionGroup(g.name, g.displayName);
-            const parents = g.permissions.filter((p) => p.parentName === null);
-            parents.forEach((parent) => {
-              const permission = new PermissionItem(
-                parent.name,
-                parent.displayName,
-                parent.isGranted
-              );
-              permission.isGranted = parent.isGranted;
-              permission.disabled = this.isGrantedByOtherProviderName(
-                parent.grantedProviders
-              );
-              permission.grantedProviders = parent.grantedProviders;
-              const subPermissions = g.permissions.filter((p) =>
-                p.parentName?.startsWith(parent.name)
-              );
-              this.generatePermission(permission, subPermissions);
-              group.addPermission(permission);
-            });
-            this.permissionGroups.push(group);
-          });
-          if (this.permissionGroups.length > 0) {
-            this.activeTabPane = this.permissionGroups[0].name;
-          }
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
-
-    /** 递归生成子节点
-     * @param permission 二级权限树
-     * @param permissions 权限列表
-     */
-    generatePermission(permission, permissions) {
-      const subPermissions = permissions.filter(
-        (p) => p.parentName !== permission.id
-      );
-      permissions = permissions.filter((p) => p.parentName === permission.id);
-      permissions.forEach((p) => {
-        const children = new PermissionItem(p.name, p.displayName, p.isGranted);
-        children.isGranted = p.isGranted;
-        children.disabled = this.isGrantedByOtherProviderName(
-          p.grantedProviders
-        );
-        const itemSubPermissions = subPermissions.filter(
-          (sp) => sp.parentName === p.name
-        );
-        if (itemSubPermissions.length > 0) {
-          this.generatePermission(children, itemSubPermissions);
-        }
-        permission.createChildren(children);
-      });
-    },
-    /**
-     * 校验是否授予过了其他提供者的的权限
-     */
-    isGrantedByOtherProviderName(grantedProviders) {
-      if (grantedProviders.length) {
-        return grantedProviders.some(
-          (p) => p.providerName !== this.providerName
-        );
-      }
-      return false;
-    },
-    /**
-     * 保存权限
-     */
-    onSave() {
-      const permissionData = new PermissionData();
-      this.permissionGroups.forEach((group) => {
-        this.updatePermissionByInput(permissionData, group.permissions);
-      });
-      this.confirmButtonBusy = true;
-      let permissionsQuery = {
-        providerName: this.providerName,
-        providerKey: this.providerKey,
-      };
-      updatePermissions(permissionsQuery, permissionData)
-        .then(() => {
-          this.$notify({
-            title: this.$i18n.t("AbpVue['Success']"),
-            message: this.$i18n.t("AbpVue['SuccessMessage']"),
-            type: "success",
-            duration: 2000,
-          });
-          fetchAppConfig(
-            permissionsQuery.providerKey,
-            permissionsQuery.providerName
-          );
-          this.onFormClosed();
-        })
-        .finally(() => {
-          this.confirmButtonBusy = false;
-        });
-    },
-    updatePermissionByInput(permissions, items) {
-      items.forEach((p) => {
-        if (p.isGranted !== p.isGrant) {
-          permissions.addPermission(p.id, p.isGrant);
-        }
-        this.updatePermissionByInput(permissions, p.children);
-      });
-    },
-
-    /**
-     * 窗口关闭事件
-     */
-    onFormClosed() {
-      this.$emit("closed");
-    },
-
-    /**
-     * 授予所有权限 按钮事件
-     */
-    onGrantAllClicked(checked) {
-      this.permissionGroups.forEach((group) => {
-        group.setAllGrant(checked);
-        const trees = this.$refs["permissionTree-" + group.name];
-        const keys = this.grantedPermissionKeys(group);
-        trees[0].setCheckedKeys(keys);
-      });
-    },
-
-    /**
-     * Permission Tree 全选按钮事件
-     */
-    onCheckScopeAllClicked(checked, group, treeRef) {
-      group.setAllGrant(checked);
-      const trees = this.$refs[treeRef];
-      const keys = this.grantedPermissionKeys(group);
-      trees[0].setCheckedKeys(keys);
-    },
-
-    /**
-     * Permission TreeNode 变更事件
-     */
-    onPermissionTreeNodeCheckChanged(permission, checked, group, treeRef) {
-      PermissionItem.setPermissionGrant(checked, permission);
-      if (permission.children.length > 0) {
-        const trees = this.$refs[treeRef];
-        const keys = this.grantedPermissionKeys(group);
-        trees[0].setCheckedKeys(keys);
-      }
-    },
-    handleNodeClick(data, node) {
-      !node.disabled && (node.checked = !node.checked);
-    },
-  },
-  watch: {
-    showDialog: {
-      handler(val) {
-        val && this.handleGetPermissions();
-      },
-    },
   },
   computed: {
     /**
@@ -361,8 +190,194 @@ export default {
     grantAllCheckBoxForward() {
       const grantCount = this.grantAllCount;
       return grantCount > 0 && grantCount < this.permissionAllCount;
-    },
+    }
   },
+  watch: {
+    showDialog: {
+      handler(val) {
+        val && this.handleGetPermissions();
+      }
+    }
+  },
+  methods: {
+    /**
+     * 获取权限集合
+     */
+    handleGetPermissions() {
+      this.loading = true;
+      this.activeTabPane = '';
+      this.permissionGroups.length = 0;
+      getPermissions({
+        providerName: this.providerName,
+        providerKey: this.providerKey
+      })
+        .then((res) => {
+          this.entityDisplayName = res.entityDisplayName;
+          res.groups.map((g) => {
+            const group = new PermissionGroup(g.name, g.displayName);
+            const parents = g.permissions.filter((p) => p.parentName === null);
+            parents.forEach((parent) => {
+              const permission = new PermissionItem();
+              permission.id = parent.name;
+              permission.isGrant = parent.isGranted;
+              permission.isGranted = parent.isGranted;
+              permission.disabled = this.isGrantedByOtherProviderName(
+                parent.grantedProviders
+              );
+              permission.grantedProviders = parent.grantedProviders;
+              permission.label = this.getShowName(
+                parent.grantedProviders,
+                parent.displayName
+              );
+              const subPermissions = g.permissions.filter((p) =>
+                p.parentName?.startsWith(parent.name)
+              );
+              this.generatePermission(permission, subPermissions);
+              group.addPermission(permission);
+            });
+            this.permissionGroups.push(group);
+          });
+          if (this.permissionGroups.length > 0) {
+            this.activeTabPane = this.permissionGroups[0].name;
+          }
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+
+    /** 递归生成子节点
+     * @param permission 二级权限树
+     * @param permissions 权限列表
+     */
+    generatePermission(permission, permissions) {
+      const subPermissions = permissions.filter(
+        (p) => p.parentName !== permission.id
+      );
+      permissions = permissions.filter((p) => p.parentName === permission.id);
+      permissions.forEach((p) => {
+        const children = new PermissionItem();
+        children.id = p.name;
+        children.isGrant = p.isGranted;
+        children.isGranted = p.isGranted;
+        children.disabled = this.isGrantedByOtherProviderName(
+          p.grantedProviders
+        );
+        children.grantedProviders = p.grantedProviders;
+        children.label = this.getShowName(p.grantedProviders, p.displayName);
+        const itemSubPermissions = subPermissions.filter(
+          (sp) => sp.parentName === p.name
+        );
+        if (itemSubPermissions.length > 0) {
+          this.generatePermission(children, itemSubPermissions);
+        }
+        permission.createChildren(children);
+      });
+    },
+    /**
+     * 校验是否授予过了其他提供者的的权限
+     */
+    isGrantedByOtherProviderName(grantedProviders) {
+      if (grantedProviders.length) {
+        return grantedProviders.some(
+          (p) => p.providerName !== this.providerName
+        );
+      }
+      return false;
+    },
+    getShowName(grantedProviders, displayName) {
+      if (!this.isGrantedByOtherProviderName(grantedProviders)) {
+        return displayName;
+      }
+      return `${displayName} ${grantedProviders
+        .filter((p) => p.providerName !== this.providerName)
+        .map((p) => p.providerName)
+        .join(', ')}`;
+    },
+    /**
+     * 保存权限
+     */
+    onSave() {
+      const permissionData = new PermissionData();
+      this.permissionGroups.forEach((group) => {
+        this.updatePermissionByInput(permissionData, group.permissions);
+      });
+      this.confirmButtonBusy = true;
+      const permissionsQuery = {
+        providerName: this.providerName,
+        providerKey: this.providerKey
+      };
+      updatePermissions(permissionsQuery, permissionData)
+        .then(() => {
+          this.$notify({
+            title: this.$i18n.t("AbpVue['Success']"),
+            message: this.$i18n.t("AbpVue['SuccessMessage']"),
+            type: 'success',
+            duration: 2000
+          });
+          fetchAppConfig(
+            permissionsQuery.providerKey,
+            permissionsQuery.providerName
+          );
+          this.onFormClosed();
+        })
+        .finally(() => {
+          this.confirmButtonBusy = false;
+        });
+    },
+    updatePermissionByInput(permissions, items) {
+      items.forEach((p) => {
+        if (p.isGranted !== p.isGrant) {
+          permissions.addPermission(p.id, p.isGrant);
+        }
+        this.updatePermissionByInput(permissions, p.children);
+      });
+    },
+
+    /**
+     * 窗口关闭事件
+     */
+    onFormClosed() {
+      this.$emit('closed');
+    },
+
+    /**
+     * 授予所有权限 按钮事件
+     */
+    onGrantAllClicked(checked) {
+      this.permissionGroups.forEach((group) => {
+        group.setAllGrant(checked);
+        const trees = this.$refs['permissionTree-' + group.name];
+        const keys = this.grantedPermissionKeys(group);
+        trees[0].setCheckedKeys(keys);
+      });
+    },
+
+    /**
+     * Permission Tree 全选按钮事件
+     */
+    onCheckScopeAllClicked(checked, group, treeRef) {
+      group.setAllGrant(checked);
+      const trees = this.$refs[treeRef];
+      const keys = this.grantedPermissionKeys(group);
+      trees[0].setCheckedKeys(keys);
+    },
+
+    /**
+     * Permission TreeNode 变更事件
+     */
+    onPermissionTreeNodeCheckChanged(permission, checked, group, treeRef) {
+      PermissionItem.setPermissionGrant(checked, permission);
+      if (permission.children.length > 0) {
+        const trees = this.$refs[treeRef];
+        const keys = this.grantedPermissionKeys(group);
+        trees[0].setCheckedKeys(keys);
+      }
+    },
+    handleNodeClick(data, node) {
+      !node.disabled && (node.checked = !node.checked);
+    }
+  }
 };
 export class PermissionData {
   constructor(name, isGranted) {
@@ -376,13 +391,13 @@ export class PermissionData {
 }
 /** element权限树 */
 export class PermissionItem {
-  constructor(id, label, isGrant) {
+  constructor() {
     /**权限ID */
-    this.id = id;
+    this.id = '';
     /**权限名称 */
-    this.label = label;
+    this.label = '';
     /**当前操作的授予权限状态 */
-    this.isGrant = isGrant;
+    this.isGrant = false;
     /**已经授予的权限状态 */
     this.isGranted = false;
     /** 是否禁用 */
@@ -424,8 +439,8 @@ export class PermissionItem {
 }
 export class PermissionGroup {
   constructor(name, displayName) {
-    this.name = "";
-    this.displayName = "";
+    this.name = '';
+    this.displayName = '';
     this.permissions = new Array();
     this.name = name;
     this.displayName = displayName;

@@ -9,8 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-using Owl.Abp.CultureMap;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,7 +73,7 @@ namespace AbpVue
             ConfigureLocalization();
             ConfigureVirtualFileSystem(context);
             ConfigureCors(context, configuration);
-            ConfigureSwaggerServices(context);
+            ConfigureSwaggerServices(context, configuration);
         }
 
         private void ConfigureFileSystem(IWebHostEnvironment hostingEnvironment)
@@ -187,14 +185,19 @@ namespace AbpVue
             });
         }
 
-        private static void ConfigureSwaggerServices(ServiceConfigurationContext context)
+        private static void ConfigureSwaggerServices(ServiceConfigurationContext context, IConfiguration configuration)
         {
-            context.Services.AddSwaggerGen(
-                options =>
-                {
-                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "AbpVue API", Version = "v1" });
-                    options.DocInclusionPredicate((docName, description) => true);
-                });
+            context.Services.AddAbpSwaggerGenWithOAuth(
+               configuration["AuthServer:Authority"],
+               new Dictionary<string, string>
+               {
+                    {"AbpVue", "AbpVue API"}
+               },
+               options =>
+               {
+                   options.SwaggerDoc("v1", new OpenApiInfo { Title = "AbpVue API", Version = "v1" });
+                   options.DocInclusionPredicate((docName, description) => true);
+               });
         }
 
         private void ConfigureLocalization()
@@ -204,17 +207,6 @@ namespace AbpVue
                 options.Languages.Add(new LanguageInfo("zh-Hans", "zh-Hans", "简体中文"));
                 options.Languages.Add(new LanguageInfo("en", "en", "English"));
             });
-            //Configure<OwlCultureMapOptions>(options =>
-            //{
-            //    var zhHansCultureMapInfo = new CultureMapInfo
-            //    {
-            //        TargetCulture = "zh-Hans",
-            //        SourceCultures = new List<string> { "zh", "zh-CN" }
-            //    };
-
-            //    options.CulturesMaps.Add(zhHansCultureMapInfo);
-            //    options.UiCulturesMaps.Add(zhHansCultureMapInfo);
-            //});
         }
 
         private void ConfigureCors(ServiceConfigurationContext context, IConfiguration configuration)
