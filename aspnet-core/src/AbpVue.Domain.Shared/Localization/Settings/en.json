@@ -1,0 +1,9 @@
+{
+  "culture": "en",
+  "texts": {
+    "DisplayName:AllowedUserAvatar.Size": "Upload the user's avatar size(KB)",
+    "Description:AllowedUserAvatar.Size": "Upload the user's avatar size",
+    "DisplayName:AllowedUserAvatar.Format": "Upload user's avatar format(Separate with commas)",
+    "Description:AllowedUserAvatar.Format": "Upload user's avatar format"
+  }
+}

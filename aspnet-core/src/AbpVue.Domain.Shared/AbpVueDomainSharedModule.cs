@@ -26,9 +26,9 @@ namespace AbpVue
         typeof(AbpIdentityServerDomainSharedModule),
         typeof(AbpPermissionManagementDomainSharedModule),
         typeof(AbpSettingManagementDomainSharedModule),
-        typeof(AbpTenantManagementDomainSharedModule)
+        typeof(AbpTenantManagementDomainSharedModule),
+        typeof(SettingUiDomainSharedModule)
         )]
-    [DependsOn(typeof(SettingUiDomainSharedModule))]
     public class AbpVueDomainSharedModule : AbpModule
     {
         public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -61,6 +61,11 @@ namespace AbpVue
                    .Add<FileResource>("zh-Hans")
                    //.AddBaseTypes(typeof(AbpValidationResource))
                    .AddVirtualJson("/Localization/Files");
+
+                options.Resources
+                  .Add<SettingsResource>("zh-Hans")
+                  //.AddBaseTypes(typeof(AbpValidationResource))
+                  .AddVirtualJson("/Localization/Settings");
 
                 options.DefaultResourceType = typeof(AbpVueResource);
             });

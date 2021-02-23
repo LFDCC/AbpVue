@@ -17,9 +17,9 @@ namespace AbpVue
         typeof(AbpIdentityHttpApiModule),
         typeof(AbpPermissionManagementHttpApiModule),
         typeof(AbpTenantManagementHttpApiModule),
-        typeof(AbpFeatureManagementHttpApiModule)
+        typeof(AbpFeatureManagementHttpApiModule),
+        typeof(SettingUiHttpApiModule)
         )]
-    [DependsOn(typeof(SettingUiHttpApiModule))]
     public class AbpVueHttpApiModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)

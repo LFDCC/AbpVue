@@ -22,9 +22,9 @@ namespace AbpVue
         typeof(AbpIdentityApplicationModule),
         typeof(AbpPermissionManagementApplicationModule),
         typeof(AbpTenantManagementApplicationModule),
-        typeof(AbpFeatureManagementApplicationModule)
+        typeof(AbpFeatureManagementApplicationModule),
+        typeof(SettingUiApplicationModule)
         )]
-    [DependsOn(typeof(SettingUiApplicationModule))]
     public class AbpVueApplicationModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)

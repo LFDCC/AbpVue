@@ -1,0 +1,9 @@
+{
+  "culture": "zh-Hans",
+  "texts": {
+    "DisplayName:AllowedUserAvatar.Size": "上传头像文件大小(KB)",
+    "Description:AllowedUserAvatar.Size": "上传头像文件大小",
+    "DisplayName:AllowedUserAvatar.Format": "上传头像文件格式(用逗号隔开)",
+    "Description:AllowedUserAvatar.Format": "上传头像文件格式"
+  }
+}

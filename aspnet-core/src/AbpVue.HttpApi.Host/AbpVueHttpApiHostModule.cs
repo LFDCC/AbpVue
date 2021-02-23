@@ -241,7 +241,6 @@ namespace AbpVue
             }
 
             app.UseAbpRequestLocalization();
-            //app.UseOwlRequestLocalization();
 
             if (!env.IsDevelopment())
             {
@@ -264,9 +263,13 @@ namespace AbpVue
             app.UseAuthorization();
 
             app.UseSwagger();
-            app.UseAbpSwaggerUI(c =>
+            app.UseAbpSwaggerUI(options =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AbpVue API");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "AbpVue API");
+
+                var configuration = context.GetConfiguration();
+                options.OAuthClientId(configuration["AuthServer:SwaggerClientId"]);
+                options.OAuthClientSecret(configuration["AuthServer:SwaggerClientSecret"]);
             });
 
             app.UseAuditing();

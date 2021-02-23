@@ -16,9 +16,9 @@ namespace AbpVue
         typeof(AbpIdentityApplicationContractsModule),
         typeof(AbpPermissionManagementApplicationContractsModule),
         typeof(AbpTenantManagementApplicationContractsModule),
-        typeof(AbpObjectExtendingModule)
+        typeof(AbpObjectExtendingModule),
+        typeof(SettingUiApplicationContractsModule)
     )]
-    [DependsOn(typeof(SettingUiApplicationContractsModule))]
     public class AbpVueApplicationContractsModule : AbpModule
     {
         public override void PreConfigureServices(ServiceConfigurationContext context)

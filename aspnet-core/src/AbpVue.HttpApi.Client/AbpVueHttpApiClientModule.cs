@@ -15,9 +15,9 @@ namespace AbpVue
         typeof(AbpIdentityHttpApiClientModule),
         typeof(AbpPermissionManagementHttpApiClientModule),
         typeof(AbpTenantManagementHttpApiClientModule),
-        typeof(AbpFeatureManagementHttpApiClientModule)
+        typeof(AbpFeatureManagementHttpApiClientModule),
+        typeof(SettingUiHttpApiClientModule)
     )]
-    [DependsOn(typeof(SettingUiHttpApiClientModule))]
     public class AbpVueHttpApiClientModule : AbpModule
     {
         public const string RemoteServiceName = "Default";
