@@ -14,12 +14,14 @@ namespace AbpVue.Settings
             //context.Add(new SettingDefinition(AbpVueSettings.MySetting1));
 
             context.Add(new SettingDefinition(
-                name:AbpVueSettings.AllowedUserAvatarFormats,
-                defaultValue: ".jpg,.jpeg,.png,.gif", 
+                isVisibleToClients: true,//在接口 abp-config settings 中显示
+                name: AbpVueSettings.AllowedUserAvatarFormats,
+                defaultValue: ".jpg,.jpeg,.png,.gif",
                 displayName: L("DisplayName:AllowedUserAvatar.Format"),
                 description: L("Description:AllowedUserAvatar.Format")));
 
             context.Add(new SettingDefinition(
+                isVisibleToClients: true,
                 name: AbpVueSettings.AllowedUserAvatarSize,
                 defaultValue: "1024",
                 displayName: L("DisplayName:AllowedUserAvatar.Size"),
