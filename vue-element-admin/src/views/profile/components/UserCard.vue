@@ -3,21 +3,20 @@
     <div slot="header" class="clearfix">
       <span>{{ $t("AbpVue.AboutMe") }}</span>
     </div>
-
     <div class="user-profile">
       <div class="box-center">
         <el-image
           class="avatar"
-          :src="this.avatarFullPath"
-          :preview-src-list="[this.avatarFullPath]"
+          :src="avatarFullPath"
+          :preview-src-list="[avatarFullPath]"
         >
         </el-image>
       </div>
       <div />
       <div class="box-center">
-        <div class="user-name text-center">{{ this.username }}</div>
+        <div class="user-name text-center">{{ username }}</div>
         <div class="user-role text-center text-muted">
-          {{ this.roles.join(" | ") }}
+          {{ roles.join(" | ") }}
         </div>
       </div>
       <div class="box-center">
@@ -44,8 +43,8 @@
         <div class="user-bio-section-body">
           <div class="text-muted">
             {{
-              this.introduction
-                ? this.introduction
+              introduction
+                ? introduction
                 : $t("AbpVue.PersonIntroduction")
             }}
           </div>

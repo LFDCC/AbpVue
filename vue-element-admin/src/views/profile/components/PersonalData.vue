@@ -112,7 +112,6 @@ export default {
                 type: "success",
                 duration: 2000,
               });
-              this.$refs["aForm"].resetFields();
               this.loading = false;
             })
             .catch(() => {
